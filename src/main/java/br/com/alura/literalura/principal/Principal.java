@@ -6,6 +6,7 @@ import br.com.alura.literalura.repository.LivroRepository;
 import br.com.alura.literalura.service.ConsumoApi;
 import br.com.alura.literalura.service.ConverteDados;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -44,7 +45,7 @@ public class Principal {
                     buscarLivroPeloTitulo();
                     break;
                 case 2:
-                    //listaLivrosRegistrados();
+                    listaLivrosRegistrados();
                     break;
                 case 3:
                     //listarAutoresRegistrados();
@@ -86,5 +87,12 @@ public class Principal {
 
         Livro livro = new Livro(dadosLivro, autor);
         livroRepository.save(livro);
+
+        System.out.println(livro);
+    }
+
+    public void listaLivrosRegistrados() {
+        List<Livro> livros = livroRepository.findAll();
+        livros.forEach(System.out::println);
     }
 }

@@ -66,10 +66,13 @@ public class Livro {
 
     @Override
     public String toString() {
-        return "----- Livro -----" +
-                "Título: " + titulo + '\'' +
-                "Autor: " + autor.getNome() + '\'' +
-                "Idioma: " + idioma + '\'' +
-                "Número de downloads: " + numeroDownloads;
+        return """
+                ----- Livro -----
+                Título: %s
+                Autor: %s
+                Idioma: %s
+                Número de downloads: %s
+                -----------------
+                """.formatted(titulo, autor.getNome(), idioma, numeroDownloads);
     }
 }
