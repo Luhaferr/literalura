@@ -9,6 +9,7 @@ import br.com.alura.literalura.service.ConverteDados;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Principal {
     private Scanner scanner = new Scanner(System.in);
@@ -48,7 +49,7 @@ public class Principal {
                     listaLivrosRegistrados();
                     break;
                 case 3:
-                    //listarAutoresRegistrados();
+                    listarAutoresRegistrados();
                     break;
                 case 4:
                     //listarAutoresVivosNoAno();
@@ -94,5 +95,18 @@ public class Principal {
     public void listaLivrosRegistrados() {
         List<Livro> livros = livroRepository.findAll();
         livros.forEach(System.out::println);
+    }
+
+    public void listarAutoresRegistrados() {
+        List<Autor> autores = autorRepository.findAll();
+
+        autores.forEach(a -> System.out.printf("""
+                Autor: %s
+                Ano de nascimento: %s
+                Ano de falecimento: %s
+                Livros: [%s]
+                
+                """, a.getNome(), a.getAnoNascimento(), a.getAnoFalecimento(), a.getLivros().stream().map(Livro::getTitulo).collect(Collectors.joining(", "))));
+
     }
 }
