@@ -4,16 +4,17 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
-//@Entity
-//@Table(name = "autores")
+@Entity
+@Table(name = "autores")
 public class Autor {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @Column(unique = true)
+    @Column(unique = true)
     private String nome;
     private int anoNascimento;
     private int anoFalecimento;
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Livro> livros;
 
     public Autor() {
@@ -55,5 +56,14 @@ public class Autor {
 
     public void setAnoFalecimento(int anoFalecimento) {
         this.anoFalecimento = anoFalecimento;
+    }
+
+    public List<Livro> getLivros() {
+        return livros;
+    }
+
+    public void setLivros(List<Livro> livros) {
+        livros.forEach(l -> l.setAutor(this));
+        this.livros = livros;
     }
 }

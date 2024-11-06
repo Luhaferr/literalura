@@ -2,14 +2,14 @@ package br.com.alura.literalura.model;
 
 import jakarta.persistence.*;
 
-//@Entity
-//@Table(name = "livros")
+@Entity
+@Table(name = "livros")
 public class Livro {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String titulo;
-//    @ManyToOne
+    @ManyToOne
     private Autor autor;
     private String idioma;
     private Long numeroDownloads;
@@ -17,8 +17,9 @@ public class Livro {
     public Livro() {
     }
 
-    public Livro(DadosLivro dadosLivro) {
+    public Livro(DadosLivro dadosLivro, Autor autor) {
         this.titulo = dadosLivro.titulo();
+        this.autor = autor;
         this.idioma = String.valueOf(dadosLivro.idioma());
         this.numeroDownloads = dadosLivro.numeroDownloads();
     }
