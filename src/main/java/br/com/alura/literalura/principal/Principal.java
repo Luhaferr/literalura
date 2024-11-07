@@ -33,6 +33,7 @@ public class Principal {
                     3 - Listar autores registrados
                     4 - Listar autores vivos em um determinado ano
                     5 - Listar livros em um determinado idioma
+                    6 - Listar os 10 livros mais baixados
                     
                     0 - Sair
                     """;
@@ -52,10 +53,13 @@ public class Principal {
                     listarAutoresRegistrados();
                     break;
                 case 4:
-                    //listarAutoresVivosNoAno();
+                    listarAutoresVivosNoAno();
                     break;
                 case 5:
-                    //ListarLivrosEmUmIdioma();
+                    listarLivrosEmUmIdioma();
+                    break;
+                case 6:
+                    listarTop10Baixados();
                     break;
                 case 0:
                     System.out.println("Saindo...");
@@ -76,20 +80,29 @@ public class Principal {
         DadosLivro dadosLivro = respostaApi.resultados().get(0);
         DadosAutor dadosAutor = dadosLivro.autores().get(0);
 
-        Optional<Autor> autorExistente = autorRepository.findByNome(dadosAutor.nome());
-        Autor autor;
+        Optional<Livro> livroBuscado = livroRepository.findByTitulo(dadosLivro.titulo());
+        Livro livro;
 
-        if (autorExistente.isPresent()) {
-            autor = autorExistente.get();
+        if (livroBuscado.isPresent()) {
+            livro = livroBuscado.get();
+            System.out.println("Livro já está registrado!");
+            System.out.println(livro);
         } else {
-            autor = new Autor(dadosAutor);
-            autorRepository.save(autor);
+            Optional<Autor> autorExistente = autorRepository.findByNome(dadosAutor.nome());
+            Autor autor;
+
+            if (autorExistente.isPresent()) {
+                autor = autorExistente.get();
+            } else {
+                autor = new Autor(dadosAutor);
+                autorRepository.save(autor);
+            }
+
+            livro = new Livro(dadosLivro, autor);
+            livroRepository.save(livro);
+
+            System.out.println(livro);
         }
-
-        Livro livro = new Livro(dadosLivro, autor);
-        livroRepository.save(livro);
-
-        System.out.println(livro);
     }
 
     public void listaLivrosRegistrados() {
@@ -100,13 +113,41 @@ public class Principal {
     public void listarAutoresRegistrados() {
         List<Autor> autores = autorRepository.findAll();
 
-        autores.forEach(a -> System.out.printf("""
-                Autor: %s
-                Ano de nascimento: %s
-                Ano de falecimento: %s
-                Livros: [%s]
-                
-                """, a.getNome(), a.getAnoNascimento(), a.getAnoFalecimento(), a.getLivros().stream().map(Livro::getTitulo).collect(Collectors.joining(", "))));
-
+        autores.forEach(System.out::println);
     }
+
+    public void listarAutoresVivosNoAno() {
+        System.out.println("Insira o ano que deseja pesquisar");
+        int ano = scanner.nextInt();
+        scanner.nextLine();
+
+        List<Autor> autoresVivos = autorRepository.findAutoresVivos(ano);
+        autoresVivos.forEach(System.out::println);
+    }
+
+    public void listarLivrosEmUmIdioma() {
+        String menuIdioma = """
+                    Insira o idioma para realizar a busca:
+                    es - espanhol
+                    en - inglês
+                    fr - francês
+                    pt - português
+                    """;
+
+        System.out.println(menuIdioma);
+        String idioma = scanner.nextLine();
+
+        List<Livro> livros = livroRepository.findByIdiomaContainingIgnoreCase(idioma);
+        if (livros.isEmpty()) {
+            System.out.println("Nenhum livro encontrado nesse idioma");
+        } else {
+            livros.forEach(System.out::println);
+        }
+    }
+
+    public void listarTop10Baixados() {
+        List<Livro> livrosBaixados = livroRepository.findTop10ByOrderByNumeroDownloadsDesc();
+        livrosBaixados.forEach(System.out::println);
+    }
+
 }
